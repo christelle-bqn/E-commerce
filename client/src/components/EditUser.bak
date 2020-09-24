@@ -1,0 +1,91 @@
+import React from "react";
+import axios from "axios";
+import CookieGetter from "./CookieGetter";
+import useSignUpForm from "../hooks/useSignupForm";
+import sha1 from "sha1";
+
+const EditUser = () => {
+  const registerAction = () => {
+    axios
+      .put(
+        "http://http://e-commerce.test/api/users/" +
+          CookieGetter("session").split("|")[1],
+        {
+          email: inputs.email,
+          password: sha1(inputs.password + "wacommerce"),
+        }
+      )
+      .then(function (response) {
+        console.log(response);
+        document.cookie = `session=${inputs.email}|${
+          CookieGetter("session").split("|")[1]
+        }|${sha1(inputs.email + "cookieSession")}`;
+        alert("Data successfully modified!");
+      })
+      .catch(function (error) {
+        alert("Uh oh! Something doesn't seem right.");
+      });
+  };
+
+  const { inputs, handleInputChange, handleSubmit } = useSignUpForm(
+    {
+      email: "",
+      password: "",
+    },
+    registerAction
+  );
+  return (
+    <div className="cf pa5-l">
+      <div className="fl w-100 tc">
+        <div className="pa4 black-80">
+          <form className="measure center" onSubmit={handleSubmit}>
+            <fieldset id="sign_in" className="ba b--transparent ph0 mh0">
+              <legend className="f4 fw6 ph0 mh0">
+                Welcome, {CookieGetter("session").split("|")[0]}!
+              </legend>
+              <div className="mt3">
+                <label className="db fw6 lh-copy f6" htmlFor="email-address">
+                  New email
+                </label>
+                <input
+                  className="pa2 input-reset ba bg-transparent w-100"
+                  type="email"
+                  name="email"
+                  id="email-signin"
+                  onChange={handleInputChange}
+                  value={inputs.email}
+                />
+              </div>
+              <div className="mv3">
+                <label className="db fw6 lh-copy f6" htmlFor="password">
+                  New password
+                </label>
+                <input
+                  className="b pa2 input-reset ba bg-transparent w-100"
+                  type="password"
+                  name="password"
+                  id="password-signin"
+                  onChange={handleInputChange}
+                  value={inputs.password}
+                />
+              </div>
+              <label className="pa0 ma0 lh-copy f6 pointer">
+                {/* <input type="checkbox" /> Remember me */}
+              </label>
+            </fieldset>
+            <div className="">
+              <input
+                className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
+                type="submit"
+                value="Modify!"
+              />
+            </div>
+            <div className="lh-copy mt3"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default EditUser;
